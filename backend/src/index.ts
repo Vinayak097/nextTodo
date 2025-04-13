@@ -22,8 +22,12 @@ app.get('/', (req: Request, res: Response) => {
   res.send('API is running...');
 });
 
-
+const PORT =process.env.PORT;
 
 connectDB()
-
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 export default app;

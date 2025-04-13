@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { Todo } from '@/lib/api';
+import { Trash2, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered } from 'lucide-react';
 
 interface TodoFormProps {
   initialData?: Todo;
@@ -14,7 +15,7 @@ export default function TodoForm({ initialData, onSubmit, isSubmitting }: TodoFo
   const [description, setDescription] = useState(initialData?.description || '');
   const [completed, setCompleted] = useState(initialData?.completed || false);
   const [error, setError] = useState('');
-
+  const [selectedTodo ,setSelectedTodo]=useState<Todo|null>()
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
@@ -36,67 +37,67 @@ export default function TodoForm({ initialData, onSubmit, isSubmitting }: TodoFo
     }
   };
 
+  function handleDeleteTodo(_id: string): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="w-[652px] h-[736px] gap-[16px] pt-[35px] pr-[42px] pb-[35px] pl-[42px]">
       {error && (
         <div className="p-3 bg-red-100 text-red-700 rounded-md dark:bg-red-900 dark:text-red-200">
           {error}
         </div>
       )}
       
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Title *
-        </label>
-        <input
-          type="text"
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-          placeholder="Enter todo title"
-          required
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Description
-        </label>
-        <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-          placeholder="Enter todo description (optional)"
-        />
-      </div>
-      
-      {initialData && (
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="completed"
-            checked={completed}
-            onChange={(e) => setCompleted(e.target.checked)}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label htmlFor="completed" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-            Mark as completed
-          </label>
+      <div className="flex-1 p-6 overflow-y-auto">
+          {selectedTodo ? (
+            <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg border">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">{selectedTodo.title}</h2>
+                <button  onClick={() => handleDeleteTodo(selectedTodo?._id)}>
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-2 mb-4 border-b pb-2">
+                <button >
+                  <Bold className="h-4 w-4" />
+                </button>
+                <button >
+                  <Italic className="h-4 w-4" />
+                </button>
+                <button >
+                  <Underline className="h-4 w-4" />
+                </button>
+                <div className="h-4 border-r mx-2"></div>
+                <button >
+                  <AlignLeft className="h-4 w-4" />
+                </button>
+                <button >
+                  <AlignCenter className="h-4 w-4" />
+                </button>
+                <button >
+                  <AlignRight className="h-4 w-4" />
+                </button>
+                <div className="h-4 border-r mx-2"></div>
+                <button >
+                  <List className="h-4 w-4" />
+                </button>
+                <button >
+                  <ListOrdered className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <p>{selectedTodo.description}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 mt-10">
+              <p>Select a todo or create a new one</p>
+            </div>
+          )}
         </div>
-      )}
-      
-      <div>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Saving...' : initialData ? 'Update Todo' : 'Create Todo'}
-        </button>
-      </div>
     </form>
   );
 }

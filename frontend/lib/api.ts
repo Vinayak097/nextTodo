@@ -1,7 +1,6 @@
-// API base URL
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import axios from 'axios'
 
-// Types
 export interface Todo {
   _id: string;
   title: string;
@@ -18,7 +17,7 @@ export interface TodosResponse {
   total: number;
 }
 
-// Get all todos with pagination
+
 export async function getTodos(page = 1, limit = 10): Promise<TodosResponse> {
   const response = await fetch(`${API_URL}/todos?page=${page}&limit=${limit}`);
   

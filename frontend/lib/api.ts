@@ -1,4 +1,5 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { NEXT_PUBLIC_API_URL } from '@/config';
 import axios from 'axios'
 
 export interface Todo {

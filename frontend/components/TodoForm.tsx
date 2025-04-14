@@ -1,103 +1,117 @@
-'use client';
+"use client"
 
-import { useState, FormEvent } from 'react';
-import { Todo } from '@/lib/api';
+import { useState } from 'react';
 import { Trash2, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered } from 'lucide-react';
 
-interface TodoFormProps {
-  initialData?: Todo;
-  onSubmit: (data: { title: string; description: string; completed?: boolean }) => Promise<void>;
-  isSubmitting: boolean;
-}
+import { createTodo, deleteTodo, Todo, updateTodo } from '@/lib/api';
+import { useTodoStore } from '@/lib/store';
 
-export default function TodoForm({ initialData, onSubmit, isSubmitting }: TodoFormProps) {
-  const [title, setTitle] = useState(initialData?.title || '');
-  const [description, setDescription] = useState(initialData?.description || '');
-  const [completed, setCompleted] = useState(initialData?.completed || false);
-  const [error, setError] = useState('');
-  const [selectedTodo ,setSelectedTodo]=useState<Todo|null>()
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError('');
+export default function TodoForm() {
 
-    if (!title.trim()) {
-      setError('Title is required');
-      return;
-    }
+  const { 
+    selectedTodo, 
+    setSelectedTodo, 
+    draftTodo, 
+    setDraftTodo 
+  } = useTodoStore();
 
-    try {
-      await onSubmit({
-        title,
-        description,
-        ...(initialData && { completed }),
-      });
-    } catch (err) {
-      setError('Failed to save todo');
-      console.error(err);
+  
+
+  
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    if (selectedTodo) {
+      setSelectedTodo({ ...selectedTodo, title: e.target.value });
+    } else {
+      setDraftTodo({ title: e.target.value });
     }
   };
-
-  function handleDeleteTodo(_id: string): void {
-    throw new Error('Function not implemented.');
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="w-[652px] h-[736px] gap-[16px] pt-[35px] pr-[42px] pb-[35px] pl-[42px]">
-      {error && (
-        <div className="p-3 bg-red-100 text-red-700 rounded-md dark:bg-red-900 dark:text-red-200">
-          {error}
-        </div>
-      )}
+  const handleClear = () => {
+    setSelectedTodo(null);
+    setDraftTodo({ title: '', description: '' });
+  };
+  const handleSave = async () => {
+    if(selectedTodo){
+      await updateTodo(selectedTodo._id,{title:selectedTodo.title,description:selectedTodo.description})
+      handleClear();
+    }
+    else{
+      try{
+        await createTodo(draftTodo);
+        
+      }catch(e){
+        console.log(e)
+      }
       
-      <div className="flex-1 p-6 overflow-y-auto">
-          {selectedTodo ? (
-            <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg border">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">{selectedTodo.title}</h2>
-                <button  onClick={() => handleDeleteTodo(selectedTodo?._id)}>
-                  <Trash2 className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="flex items-center space-x-2 mb-4 border-b pb-2">
-                <button >
-                  <Bold className="h-4 w-4" />
-                </button>
-                <button >
-                  <Italic className="h-4 w-4" />
-                </button>
-                <button >
-                  <Underline className="h-4 w-4" />
-                </button>
-                <div className="h-4 border-r mx-2"></div>
-                <button >
-                  <AlignLeft className="h-4 w-4" />
-                </button>
-                <button >
-                  <AlignCenter className="h-4 w-4" />
-                </button>
-                <button >
-                  <AlignRight className="h-4 w-4" />
-                </button>
-                <div className="h-4 border-r mx-2"></div>
-                <button >
-                  <List className="h-4 w-4" />
-                </button>
-                <button >
-                  <ListOrdered className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="mt-4">
-                <p>{selectedTodo.description}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center text-gray-500 mt-10">
-              <p>Select a todo or create a new one</p>
-            </div>
-          )}
+      handleClear();
+    }
+  }
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (selectedTodo) {
+      setSelectedTodo({ ...selectedTodo, description: e.target.value });
+    } else {
+      setDraftTodo({ description: e.target.value });
+    }
+  };
+  
+  return (
+    <div className="flex bg-white flex-col hidden sm:block  gap-[72px] overflow-y-auto w-[652px] rounded-md h-[400px]">
+      <div className="max-w-3xl flex-1 bg-white rounded-lg p-6">
+        <div className="flex justify-between items-center mb-4">
+        <input 
+            type="text"
+            className="p-2 text-2xl font-bold w-full outline-none"
+            value={selectedTodo?.title ?? draftTodo.title}
+            onChange={handleTitleChange}
+            placeholder="Enter title"
+          />
+          <button onClick={() => setSelectedTodo(null)}>
+            <Trash2 className="h-5 w-5" />
+            </button>
         </div>
-    </form>
+        
+        <div className="flex items-center space-x-2 mb-4 border-b pb-2">
+          <button>
+            <Bold className="h-4 w-4" />
+          </button>
+          <button>
+            <Italic className="h-4 w-4" />
+          </button>
+          <button>
+            <Underline className="h-4 w-4" />
+          </button>
+          <div className="h-4 border-r mx-2"></div>
+          <button>
+            <AlignLeft className="h-4 w-4" />
+          </button>
+          <button>
+            <AlignCenter className="h-4 w-4" />
+          </button>
+          <button>
+            <AlignRight className="h-4 w-4" />
+          </button>
+          <div className="h-4 border-r mx-2"></div>
+          <button>
+            <List className="h-4 w-4" />
+          </button>
+          <button>
+            <ListOrdered className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="mt-4">
+        <textarea
+            className="p-2 w-full font-normal text-[18px] font-poppins min-h-[200px] rounded outline-none"
+            value={selectedTodo?.description ?? draftTodo.description}
+            onChange={handleDescriptionChange}
+            placeholder="Enter description"
+          />
+          <button onClick={handleSave} className='px-2 my-2 py-1 bg-green-500  opacity-80 rounded-md flex float-right'>
+            {selectedTodo? 'update' : 'create'}
+            </button>
+        </div>
+      </div>
+    </div>
   );
 }
+

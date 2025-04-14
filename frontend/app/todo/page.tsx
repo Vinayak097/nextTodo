@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import TodoForm from '@/components/TodoForm';
+
 import { createTodo } from '@/lib/api';
 
 export default function CreateTodoPage() {
@@ -34,7 +34,7 @@ export default function CreateTodoPage() {
       
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold mb-6">Create New Todo</h1>
-        <TodoForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+        
       </div>
     </div>
   );

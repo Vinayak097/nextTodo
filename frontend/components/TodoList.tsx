@@ -8,7 +8,7 @@ import Navbar from './Navbar';
 
 export default function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -32,20 +32,7 @@ export default function TodoList() {
     fetchTodos();
   }, [page]);
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this todo?')) {
-      try {
-        setIsDeleting(true);
-        await deleteTodo(id);
-        await fetchTodos(); // Refresh the list
-      } catch (err) {
-        setError('Failed to delete todo');
-        console.error(err);
-      } finally {
-        setIsDeleting(false);
-      }
-    }
-  };
+  
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -87,10 +74,10 @@ export default function TodoList() {
   return (
     <>
     
-    <div className='h-[1823px] w-[401px] flex flex-col gap-[16px] lg:mt-[67px] lg:ml-[114px] mt-4 mx-4'>
+    <div className='h-[1823px] w-[401px] flex flex-col gap-[16px] '>
     <Navbar></Navbar>
       {todos.map((todo)=>(
-        <TodoCard key={todo._id} todo={todo} onDelete={handleDelete} onUpdate={fetchTodos} />
+        <TodoCard key={todo._id} todo={todo}  onUpdate={fetchTodos} />
       ))}
       
     </div>

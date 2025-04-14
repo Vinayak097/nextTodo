@@ -5,37 +5,21 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import { createTodo } from '@/lib/api';
+import TodoForm from '@/components/TodoForm';
+import { MoveLeft } from 'lucide-react';
 
 export default function CreateTodoPage() {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (data: { title: string; description: string }) => {
-    setIsSubmitting(true);
-    try {
-      await createTodo(data);
-      router.push('/');
-      router.refresh();
-    } catch (error) {
-      console.error('Error creating todo:', error);
-      throw error;
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+ 
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <div className="mb-6">
-        <Link href="/" className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-          &larr; Back to Todos
+    <div className="h-[90vh] flex flex-col gap-[16px] bg-gray-100 container mx-auto px-4 py-3 max-w-2xl">
+      <div className="">
+        <Link href="/" className="flex items-center gap-[16px] hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+        <MoveLeft className='font-bold' size={24} /> <p className='font-poppins font-bold text-[24px] leading-100% tracking-[0.02em]'>Back</p>
         </Link>
       </div>
       
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold mb-6">Create New Todo</h1>
-        
-      </div>
+      <TodoForm></TodoForm>
     </div>
   );
 }

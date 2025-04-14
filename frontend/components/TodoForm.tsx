@@ -3,11 +3,15 @@
 import { useState } from 'react';
 import { Trash2, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered } from 'lucide-react';
 
-import { createTodo, deleteTodo, Todo, updateTodo } from '@/lib/api';
-import { useTodoStore } from '@/lib/store';
+import { createTodo, deleteTodo, getTodos, Todo, updateTodo } from '@/lib/api';
+import { useTodoListStore, useTodoStore } from '@/lib/store';
+import { usePathname } from 'next/navigation';
 
 export default function TodoForm() {
-
+  const pathname = usePathname();
+  const isStandalonePage = pathname === '/todo';
+  const [isDeleting, setIsDeleting] = useState(false);
+  const {setTodos}=useTodoListStore()
   const { 
     selectedTodo, 
     setSelectedTodo, 
@@ -15,9 +19,27 @@ export default function TodoForm() {
     setDraftTodo 
   } = useTodoStore();
 
-  
+  const fetchTodos = async () => {
+    try {
+      const response = await getTodos();
+      setTodos(response.todos);
+    } catch (error) {
+      console.error('Error fetching todos:', error);
+    }
+  };
+  const [loading,setloading]=useState(false)
 
-  
+  const handleDelete=async()=>{
+    setIsDeleting(true);
+    if(!selectedTodo){
+      setIsDeleting(false)
+      return;
+    }
+    await deleteTodo(selectedTodo._id)
+    fetchTodos()
+    handleClear()
+    setIsDeleting(false)
+  }
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
     if (selectedTodo) {
@@ -31,20 +53,23 @@ export default function TodoForm() {
     setDraftTodo({ title: '', description: '' });
   };
   const handleSave = async () => {
+    setloading(true)
     if(selectedTodo){
       await updateTodo(selectedTodo._id,{title:selectedTodo.title,description:selectedTodo.description})
       handleClear();
+      fetchTodos();
     }
     else{
       try{
         await createTodo(draftTodo);
-        
+        fetchTodos();
       }catch(e){
         console.log(e)
       }
       
       handleClear();
     }
+    setloading(false)
   }
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (selectedTodo) {
@@ -55,18 +80,19 @@ export default function TodoForm() {
   };
   
   return (
-    <div className="flex bg-white flex-col hidden sm:block  gap-[72px] overflow-y-auto w-[652px] rounded-md h-[400px]">
-      <div className="max-w-3xl flex-1 bg-white rounded-lg p-6">
+    <div className={`flex bg-white flex-col ${isStandalonePage ?'':'hidden'} sm:block  gap-[72px] overflow-y-auto w-full lg:w-[652px] h-full lg:h-[450px] rounded-md `}>
+      <div className="max-w-3xl flex-1 bg-white rounded-lg lg:p-6 p-2">
         <div className="flex justify-between items-center mb-4">
         <input 
             type="text"
-            className="p-2 text-2xl font-bold w-full outline-none"
+            className="p-2 lg:text-2xl text-lg font-bold w-full h-full outline-none"
             value={selectedTodo?.title ?? draftTodo.title}
             onChange={handleTitleChange}
             placeholder="Enter title"
           />
-          <button onClick={() => setSelectedTodo(null)}>
-            <Trash2 className="h-5 w-5" />
+          <button className='hover:cursor-pointer' onClick={() => handleDelete()}>
+            {!isDeleting && <Trash2 size={20} className="" />}
+            {isDeleting && <span className="ml-2 h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin inline-block"></span>}
             </button>
         </div>
         
@@ -99,16 +125,26 @@ export default function TodoForm() {
           </button>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 h-full">
         <textarea
-            className="p-2 w-full font-normal text-[18px] font-poppins min-h-[200px] rounded outline-none"
+            className="p-2 w-full h-full font-normal text-[18px] font-poppins min-h-[200px] rounded outline-none"
             value={selectedTodo?.description ?? draftTodo.description}
             onChange={handleDescriptionChange}
             placeholder="Enter description"
           />
-          <button onClick={handleSave} className='px-2 my-2 py-1 bg-green-500  opacity-80 rounded-md flex float-right'>
-            {selectedTodo? 'update' : 'create'}
-            </button>
+
+<button
+  onClick={handleSave}
+  className="px-2 py-1 my-2 bg-green-500 hover:bg-green-600 text-white font-lg rounded-md flex items-center justify-center float-right min-w-[72px] transition-opacity duration-200 opacity-90"
+>
+  {loading ? (
+    <span className="animate-spin my-1 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+  ) : (
+    <span>{selectedTodo ? 'Update' : 'Create'}</span>
+  )}
+</button>
+
+
         </div>
       </div>
     </div>

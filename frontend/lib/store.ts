@@ -10,7 +10,10 @@ interface TodoStore {
   setDraftTodo: (draft: { title?: string; description?: string }) => void
   resetDraftTodo: () => void
 }
-
+interface TodoListStore {
+  todos: Todo[]
+  setTodos: (todos: Todo[]) => void
+}
   export const useTodoStore = create<TodoStore>((set) => ({
     selectedTodo: null,
     draftTodo: {
@@ -24,7 +27,7 @@ interface TodoStore {
     resetDraftTodo: () => set({ draftTodo: { title: '', description: '' } })
   }))
 
-export const usemytodo=create((set)=>({
+export const useTodoListStore=create<TodoListStore>((set)=>({
   todos:[],
   setTodos:(todos:Todo[])=>set({todos})
 }))

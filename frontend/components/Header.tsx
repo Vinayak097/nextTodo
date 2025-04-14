@@ -4,7 +4,7 @@ const Header = () => {
   return (
     
         <header className="bg-white h-[88px] flex  items-center  ">
-              <div className="flex gap-[8px] absolute  left-[63px] pt-[29px] pb-[29px]">
+              <div className="flex gap-[8px] absolute   left-[16px] lg:left-[63px] pt-[29px] pb-[29px]">
               <Image
                 src="/logo.png"
                 alt="Logo"

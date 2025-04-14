@@ -5,40 +5,37 @@ import Link from 'next/link';
 import { getTodos, deleteTodo, Todo, updateTodo } from '@/lib/api';
 import TodoCard from './TodoCard';
 import Navbar from './Navbar';
+import { useTodoListStore } from '@/lib/store';
 
 export default function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const {todos,setTodos}=useTodoListStore();
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [isDeleting, setIsDeleting] = useState(false);
+  
 
-  const fetchTodos = async () => {
-    try {
-      setLoading(true);
-      const data = await getTodos(page);
-      setTodos(data.todos);
-      setTotalPages(data.totalPages);
-    } catch (err) {
-      setError('Failed to load todos');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTodos();
-  }, [page]);
+  useEffect(()=>{
+    (async()=>{
+      try{
+        setLoading(true);
+        const response=await getTodos(page);
+        setTodos(response.todos);
+        setTotalPages(response.totalPages);
+      }catch(e){
+        setError('Failed to fetch todos');
+      }finally{
+        setLoading(false);
+      }
+    })()
+  },[])
 
   
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setPage(newPage);
-    }
-  };
+  
+
+ 
 
   if (loading && todos.length === 0) {
     return (
@@ -61,26 +58,26 @@ export default function TodoList() {
     return (
       <div className="text-center py-8">
         <p className="text-gray-600 dark:text-gray-400 mb-4">No todos found</p>
-        <Link
-          href="/todo"
+        <p
+         
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
         >
           Create your first todo
-        </Link>
+        </p>
       </div>
     );
   }
 
   return (
-    <>
-    
-    <div className='h-[1823px] w-[401px] flex flex-col gap-[16px] '>
+    <div className="w-[401px] flex flex-col gap-[16px]">
     <Navbar></Navbar>
-      {todos.map((todo)=>(
-        <TodoCard key={todo._id} todo={todo}  onUpdate={fetchTodos} />
-      ))}
-      
+    <div className="overflow-y-auto scrollbar-hide max-h-[calc(100vh-200px)]">
+      <div className="flex flex-col gap-[16px]">
+        {todos.map((todo) => (
+          <TodoCard key={todo._id} todo={todo} />
+        ))}
+      </div>
     </div>
-    </>
+  </div>
   );
 }

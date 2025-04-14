@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Trash2, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered } from 'lucide-react';
 
-import { createTodo, deleteTodo, getTodos, Todo, updateTodo } from '@/lib/api';
+import { createTodo, deleteTodo, getTodos,  updateTodo } from '@/lib/api';
 import { useTodoListStore, useTodoStore } from '@/lib/store';
 import { usePathname } from 'next/navigation';
 

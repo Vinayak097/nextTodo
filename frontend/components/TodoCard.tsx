@@ -1,8 +1,6 @@
-'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Todo, updateTodo } from '@/lib/api';
+
+import { Todo } from '@/lib/api';
 import formatDate from '@/lib/dateformater';
 import { useTodoStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
@@ -14,20 +12,10 @@ interface TodoCardProps {
 
 
 export default function TodoCard({ todo }: TodoCardProps) {
-  const [isCompleting, setIsCompleting] = useState(false);
+  
   const router=useRouter()
-  const { setSelectedTodo, selectedTodo } = useTodoStore();
-  const handleToggleComplete = async () => {
-    try {
-      setIsCompleting(true);
-      await updateTodo(todo._id, { completed: !todo.completed });
-     
-    } catch (error) {
-      console.error('Error toggling todo completion:', error);
-    } finally {
-      setIsCompleting(false);
-    }
-  };
+  const { setSelectedTodo } = useTodoStore();
+  
   const handleSelection = () => {
     setSelectedTodo(todo);
     if(window.innerWidth<768){

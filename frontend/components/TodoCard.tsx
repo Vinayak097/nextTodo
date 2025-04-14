@@ -4,6 +4,7 @@ import { Todo } from '@/lib/api';
 import formatDate from '@/lib/dateformater';
 import { useTodoStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
+import { memo } from 'react';
 
 interface TodoCardProps {
   todo: Todo;
@@ -11,7 +12,8 @@ interface TodoCardProps {
 }
 
 
-export default function TodoCard({ todo }: TodoCardProps) {
+ 
+const TodoCard = memo(function TodoCard({ todo }: TodoCardProps)  {
   
   const router=useRouter()
   const { setSelectedTodo } = useTodoStore();
@@ -33,4 +35,5 @@ export default function TodoCard({ todo }: TodoCardProps) {
       </div>
     </div>
   );
-}
+});
+export default TodoCard

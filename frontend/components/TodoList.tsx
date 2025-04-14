@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 
 import { getTodos} from '@/lib/api';
 import TodoCard from './TodoCard';

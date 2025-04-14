@@ -1,5 +1,4 @@
 
-
 import "./globals.css";
 import { Poppins } from 'next/font/google';
 import Header from "@/components/Header";
@@ -11,7 +10,10 @@ const poppins = Poppins({
   display: 'swap',
 });
 
-
+export const metadata = {
+  title: 'Todo App',
+  description: 'A simple todo application',
+};
 
 
 

@@ -80,20 +80,20 @@ export default function TodoForm() {
   };
   
   return (
-    <div className={`flex bg-white flex-col ${isStandalonePage ?'':'hidden'} sm:block  gap-[72px] overflow-y-auto w-full lg:w-[652px] h-full lg:h-[450px] rounded-md `}>
-      <div className="max-w-3xl flex-1 bg-white rounded-lg lg:p-6 p-2">
-        <div className="flex justify-between items-center mb-4">
-        <input 
+    <div className={`flex bg-white flex-col ${isStandalonePage ? '' : 'hidden sm:block'} gap-[72px] overflow-y-auto w-full lg:w-[652px] h-[calc(100vh-120px)] rounded-md`}>
+      <div className="h-full flex flex-col bg-white rounded-lg lg:p-6 p-4">
+        <div className="flex justify-between items-start gap-2 mb-4">
+          <input 
             type="text"
-            className="p-2 lg:text-2xl text-lg font-bold w-full h-full outline-none"
+            className="p-2 text-2xl font-bold w-full outline-none min-h-[40px] break-words"
             value={selectedTodo?.title ?? draftTodo.title}
             onChange={handleTitleChange}
             placeholder="Enter title"
           />
-          <button className='hover:cursor-pointer' onClick={() => handleDelete()}>
+          <button className='hover:cursor-pointer shrink-0' onClick={() => handleDelete()}>
             {!isDeleting && <Trash2 size={20} className="" />}
             {isDeleting && <span className="ml-2 h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin inline-block"></span>}
-            </button>
+          </button>
         </div>
         
         <div className="flex items-center space-x-2 mb-4 border-b pb-2">
@@ -125,29 +125,31 @@ export default function TodoForm() {
           </button>
         </div>
 
-        <div className="mt-4 h-full">
-        <textarea
-            className="p-2 w-full h-full font-normal text-[18px] font-poppins min-h-[200px] rounded outline-none"
+        <div className="flex-1 flex flex-col h-full">
+          <textarea
+            className="flex-1 p-2 w-full font-normal text-[18px] font-poppins resize-none outline-none mb-4"
             value={selectedTodo?.description ?? draftTodo.description}
             onChange={handleDescriptionChange}
             placeholder="Enter description"
+            style={{ height: '100%' }}
           />
 
-<button
-  onClick={handleSave}
-  className="px-2 py-1 my-2 bg-green-500 hover:bg-green-600 text-white font-lg rounded-md flex items-center justify-center float-right min-w-[72px] transition-opacity duration-200 opacity-90"
->
-  {loading ? (
-    <span className="animate-spin my-1 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-  ) : (
-    <span>{selectedTodo ? 'Update' : 'Create'}</span>
-  )}
-</button>
-
-
+          <div className="flex justify-end mt-auto pt-2">
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-lg rounded-md flex items-center justify-center min-w-[72px] transition-opacity duration-200 opacity-90"
+            >
+              {loading ? (
+                <span className="animate-spin my-1 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+              ) : (
+                <span>{selectedTodo ? 'Update' : 'Create'}</span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
 
